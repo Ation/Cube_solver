@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Cube.Cube
 {
@@ -19,27 +17,23 @@ namespace Cube.Cube
         private byte[,,]    m_model;
         private XYZ m_axisDirection;
 
-        private string m_name;
-        private int m_color;
-        private int m_count;
-
         private Detal()
         { }
 
         public Detal(string name, int color, byte[,,] model)
         {
-            XYZ start = new XYZ();
-            XYZ end = new XYZ();
+            var start = new XYZ();
+            var end = new XYZ();
 
             if (color == 0)
             {
                 color = 1;
             }
 
-            bool point_founded;
+            bool pointFounded;
 
-            m_name = name;
-            m_color = color;
+            Name = name;
+            Color = color;
 
             int x = 0;
             int y = 0;
@@ -51,7 +45,7 @@ namespace Cube.Cube
             m_axisDirection.Z = _AxisZ;
 
             // search start
-            for (x = 0, point_founded = false; x < model.GetLength(_AxisX - 1); x++)
+            for (x = 0, pointFounded = false; x < model.GetLength(_AxisX - 1); x++)
             {
                 for (y = 0; y < model.GetLength(_AxisY - 1); y++)
                 {
@@ -59,22 +53,22 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
             }
 
-            if (!point_founded)
+            if (!pointFounded)
             {
                 throw new Exception("invalid data");
             }
@@ -82,7 +76,7 @@ namespace Cube.Cube
             start.X = x;
 
             // try to find end
-            for (x = model.GetLength(_AxisX - 1) - 1, point_founded = false; x > start.X; x--)
+            for (x = model.GetLength(_AxisX - 1) - 1, pointFounded = false; x > start.X; x--)
             {
                 for (y = 0; y < model.GetLength(_AxisY - 1); y++)
                 {
@@ -90,16 +84,16 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
@@ -109,7 +103,7 @@ namespace Cube.Cube
 
             // have x
             // try to find start y
-            for (y = 0, point_founded = false; y < model.GetLength(_AxisY - 1); y++)
+            for (y = 0, pointFounded = false; y < model.GetLength(_AxisY - 1); y++)
             {
                 for (x = start.X; x <= end.X; x++)
                 {
@@ -117,16 +111,16 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
@@ -135,7 +129,7 @@ namespace Cube.Cube
             start.Y = y;
 
             // ok. try to find end y
-            for (y = model.GetLength(_AxisY - 1) - 1, point_founded = false; y > start.Y; y--)
+            for (y = model.GetLength(_AxisY - 1) - 1, pointFounded = false; y > start.Y; y--)
             {
                 for (x = start.X; x <= end.X; x++)
                 {
@@ -143,16 +137,16 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
@@ -161,7 +155,7 @@ namespace Cube.Cube
             end.Y = y;
 
             // lets finally find Z
-            for (z = 0, point_founded = false; z < model.GetLength(_AxisZ - 1); z++)
+            for (z = 0, pointFounded = false; z < model.GetLength(_AxisZ - 1); z++)
             {
                 for (x = start.X; x <= end.X; x++)
                 {
@@ -169,16 +163,16 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
@@ -186,7 +180,7 @@ namespace Cube.Cube
 
             start.Z = z;
 
-            for (z = model.GetLength(_AxisZ - 1) - 1, point_founded = false; z > start.Z; z--)
+            for (z = model.GetLength(_AxisZ - 1) - 1, pointFounded = false; z > start.Z; z--)
             {
                 for (x = start.X; x <= end.X; x++)
                 {
@@ -194,16 +188,16 @@ namespace Cube.Cube
                     {
                         if (model[x, y, z] != 0)
                         {
-                            point_founded = true;
+                            pointFounded = true;
                             break;
                         }
                     }
-                    if (point_founded)
+                    if (pointFounded)
                     {
                         break;
                     }
                 }
-                if (point_founded)
+                if (pointFounded)
                 {
                     break;
                 }
@@ -211,7 +205,7 @@ namespace Cube.Cube
 
             end.Z = z;
 
-            m_count = 0;
+            Count = 0;
             m_model = new byte[end.X - start.X + 1, end.Y - start.Y + 1, end.Z - start.Z + 1];
             for (x = 0; x < end.X - start.X + 1; x++)
             {
@@ -224,7 +218,7 @@ namespace Cube.Cube
                         if (model[x + start.X, y + start.Y, z + start.Z] != 0)
                         {
                             m_model[x, y, z] = (byte)color;
-                            m_count++;
+                            Count++;
                         }
                         else
                         {
@@ -239,30 +233,30 @@ namespace Cube.Cube
 
         public bool Rotate(RotateDirection direction, RotationAngle angle)
         {
-            int axis_x = m_axisDirection.X;
-            int axis_y = m_axisDirection.Y;
-            int axis_z = m_axisDirection.Z;
+            int axisX = m_axisDirection.X;
+            int axisY = m_axisDirection.Y;
+            int axisZ = m_axisDirection.Z;
             switch (direction)
             {
                 case RotateDirection.RotationX:
-                    Rotate(ref axis_y, ref axis_z, angle);
+                    Rotate(ref axisY, ref axisZ, angle);
                     break;
                 case RotateDirection.RotationY:
-                    Rotate(ref axis_z, ref axis_x, angle);
+                    Rotate(ref axisZ, ref axisX, angle);
                     break;
                 case RotateDirection.RotationZ:
-                    Rotate(ref axis_x, ref axis_y, angle);
+                    Rotate(ref axisX, ref axisY, angle);
                     break;
             }
 
-            m_axisDirection.X = axis_x;
-            m_axisDirection.Y = axis_y;
-            m_axisDirection.Z = axis_z;
+            m_axisDirection.X = axisX;
+            m_axisDirection.Y = axisY;
+            m_axisDirection.Z = axisZ;
 
             return true;
         }
 
-        private bool Rotate(ref int firstAxis, ref int secondAxis, RotationAngle angle)
+        private void Rotate(ref int firstAxis, ref int secondAxis, RotationAngle angle)
         {
             int temp;
             switch (angle)
@@ -282,8 +276,6 @@ namespace Cube.Cube
                     firstAxis = -temp;
                     break;
             }
-
-            return true;
         }
 
         #endregion
@@ -474,40 +466,11 @@ namespace Cube.Cube
             return result;
         }
 
-        public string Name
-        {
-            get
-            {
-                return m_name;
-            }
-            private set
-            {
-                m_name = value;
-            }
-        }
+        public string Name { get; private set; }
 
-        public int Color
-        {
-            get
-            {
-                return m_color;
-            }
-            private set
-            {
-                m_color = value;
-            }
-        }
+        public int Color { get; private set; }
 
-        public int Count {
-            get
-            {
-                return m_count;
-            }
-            private set
-            {
-                m_count = value;
-            }
-        }
+        public int Count { get; private set; }
 
         #endregion
 
@@ -515,11 +478,11 @@ namespace Cube.Cube
 
         public object Clone()
         {
-            Detal result = new Detal();
+            var result = new Detal();
 
-            result.m_name = m_name;
-            result.m_color = m_color;
-            result.m_count = m_count;
+            result.Name = Name;
+            result.Color = Color;
+            result.Count = Count;
 
             result.m_axisDirection = new XYZ(m_axisDirection.X, m_axisDirection.Y, m_axisDirection.Z);
 

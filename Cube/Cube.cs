@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
+using System.Linq;
 
 namespace Cube.Cube
 {
@@ -9,7 +9,7 @@ namespace Cube.Cube
         /// <summary>
         /// cube size
         /// </summary>
-        private int m_sideLength;
+        private readonly int m_sideLength;
 
         /// <summary>
         /// total detail count(volume)
@@ -19,9 +19,9 @@ namespace Cube.Cube
         /// <summary>
         /// list of added details
         /// </summary>
-        List<Detal> m_details;
+        readonly List<Detal> m_details;
 
-        private int m_cubeVolume;
+        private readonly int m_cubeVolume;
 
         public Cube(int sideLength)
         {
@@ -33,25 +33,25 @@ namespace Cube.Cube
 
         public bool AddDetail(string name, int color, byte[, ,] detailData)
         {
-            Detal _d = new Detal(name, color, detailData);
+            var d = new Detal(name, color, detailData);
 
-            m_totalCount += _d.Count;
+            m_totalCount += d.Count;
 
             if (m_totalCount > m_cubeVolume)
             {
                 throw new Exception("to much details for this cube");
             }
 
-            AddToDetailList(_d);
+            AddToDetailList(d);
 
             return true;
         }
 
-        private void AddToDetailList(Detal _d)
+        private void AddToDetailList(Detal d)
         {
             if (m_details.Count == 0)
             {
-                m_details.Add(_d);
+                m_details.Add(d);
             }
             else
             {
@@ -59,13 +59,13 @@ namespace Cube.Cube
 
                 for (index = 0; index < m_details.Count; index++)
                 {
-                    if (m_details[index].Count < _d.Count)
+                    if (m_details[index].Count < d.Count)
                     {
                         break;
                     }
                 }
 
-                m_details.Insert(index, _d);
+                m_details.Insert(index, d);
             }
         }
 
@@ -84,23 +84,19 @@ namespace Cube.Cube
                 throw new Exception("Could not solve - not enough data");
             }
 
-            List<CubeSolveResult> results = new List<CubeSolveResult>();
-
             // add positions for first detail
-            Detal _d = (Detal)m_details[0].Clone();
-            List<Detal> rotatedDetails;
-            List<CubeSolveResult> tempResults;
+            var d = (Detal)m_details[0].Clone();
 
-            results = GetPositionsForDetail(new CubeSolveResult(m_sideLength), _d);
+            var results = GetPositionsForDetail(new CubeSolveResult(m_sideLength), d);
 
             for (i = 1; i < m_details.Count; i++)
             {
-                rotatedDetails = GetRotatedDetails(m_details[i]);
-                tempResults = new List<CubeSolveResult>();
+                var rotatedDetails = GetRotatedDetails(m_details[i]);
+                var tempResults = new List<CubeSolveResult>();
 
-                foreach (Detal detalRotated in rotatedDetails)
+                foreach (var detalRotated in rotatedDetails)
                 {
-                    foreach (CubeSolveResult solve in results)
+                    foreach (var solve in results)
                     {
                         tempResults.AddRange(GetPositionsForDetail(solve, detalRotated));
                     }
@@ -114,22 +110,21 @@ namespace Cube.Cube
 
         private List<CubeSolveResult> GetPositionsForDetail(CubeSolveResult currentSolve, Detal detail)
         {
-            List<CubeSolveResult> result = new List<CubeSolveResult>();
-            CubeSolveResult temp;
+            var result = new List<CubeSolveResult>();
 
             byte[, ,] detailModel = detail.GetModel();
 
             int x;
-            int y;
-            int z;
 
             for (x = 0; x <= m_sideLength - detailModel.GetLength(0); x++)
             {
+                int y;
                 for (y = 0; y <= m_sideLength - detailModel.GetLength(1); y++ )
                 {
+                    int z;
                     for (z = 0; z <= m_sideLength - detailModel.GetLength(2); z++)
                     {
-                        temp = (CubeSolveResult)currentSolve.Clone();
+                        var temp = (CubeSolveResult)currentSolve.Clone();
 
                         if (temp.AddDetail(new DetailPosition((Detal)detail.Clone(), new XYZ(x, y, z))))
                         {
@@ -142,42 +137,31 @@ namespace Cube.Cube
             return result;
         }
 
-        private List<Detal> GetRotatedDetails(Detal _d)
+        private IEnumerable<Detal> GetRotatedDetails(ICloneable d)
         {
-            Detal temp = (Detal)_d.Clone();
-            List<Detal> result = new List<Detal>();
-            List<byte[, ,]> result_models = new List<byte[, ,]>();
-            byte[, ,] tempModel;
+            var temp = (Detal)d.Clone();
+            var result = new List<Detal>();
+            var resultModels = new List<byte[, ,]>();
 
             bool left = true;
             int side;
-            int direction;
 
             for (side = 0; side < 6; side++)
             {
+                int direction;
                 for (direction = 0; direction < 4 ; direction++)
                 { 
                     // add
-                    tempModel = temp.GetModel();
-                    if (!DetailModelExists(result_models, tempModel))
+                    byte[, ,] tempModel = temp.GetModel();
+                    if (!DetailModelExists(resultModels, tempModel))
                     {
                         result.Add((Detal)temp.Clone());
-                        result_models.Add(tempModel);
+                        resultModels.Add(tempModel);
                     }
-
-                    /*if (direction == 3)
-                    {
-                        break;
-                    }*/
 
                     // rotate
                     temp.Rotate(RotateDirection.RotationX, RotationAngle.Angle90);
                 }
-
-                /*if (side == 5)
-                {
-                    break;
-                }*/
 
                 // change side
                 temp.Rotate(left ? RotateDirection.RotationY : RotateDirection.RotationZ, RotationAngle.Angle90 );
@@ -186,20 +170,9 @@ namespace Cube.Cube
             return result;
         }
 
-        private bool DetailModelExists(List<byte[, ,]> modelsList, byte[, ,] model)
+        private bool DetailModelExists(IEnumerable<byte[,,]> modelsList, byte[, ,] model)
         {
-            bool result = false;
-
-            foreach (byte[, ,] modelFromList in modelsList)
-            {
-                if (ModelsEqual(modelFromList, model))
-                {
-                    result = true;
-                    break;
-                }
-            }
-
-            return result;
+            return modelsList.Any(modelFromList => ModelsEqual(modelFromList, model));
         }
 
         private bool ModelsEqual(byte[, ,] model1, byte[, ,] model2)
@@ -213,13 +186,13 @@ namespace Cube.Cube
                 result = true;
 
                 int x;
-                int y;
-                int z;
 
                 for (x = 0; (x < model1.GetLength(0)) && result; x++)
                 {
+                    int y;
                     for (y = 0; (y < model1.GetLength(1)) && result; y++)
                     {
+                        int z;
                         for (z = 0; (z < model1.GetLength(2)); z++)
                         {
                             if (model1[x, y, z] != model2[x, y, z])

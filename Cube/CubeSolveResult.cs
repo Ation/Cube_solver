@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 namespace Cube.Cube
 {
@@ -124,7 +123,7 @@ namespace Cube.Cube
 
         public object Clone()
         {
-            CubeSolveResult result = new CubeSolveResult();
+            var result = new CubeSolveResult();
 
             result.m_details = new List<DetailPosition>(m_details);
             result.m_size = m_size;
